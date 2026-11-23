@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In Page</title>
+    <style>
+        :root {
+            --page: #edf0f4;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --field: #f3f4f6;
+            --button: #dedede;
+            --border: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: var(--page);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .login-card {
+            width: min(420px, calc(100vw - 32px));
+            min-height: 410px;
+            margin: 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.10);
+            position: relative;
+            padding: 128px 42px 34px;
+        }
+
+        .brand {
+            position: absolute;
+            top: 52px;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            transform: translateX(-50%);
+            display: grid;
+            place-items: center;
+            border: 1px solid #f0f0f0;
+            border-radius: 50%;
+            background: #f8fafc;
+            box-shadow: 0 5px 16px rgba(15, 23, 42, 0.08);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        h1 {
+            margin: 0 0 22px;
+            text-align: center;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        form { margin: 0; }
+
+        .field {
+            margin-bottom: 10px;
+        }
+
+        .field input {
+            width: 100%;
+            height: 46px;
+            border: 0;
+            border-radius: 0;
+            background: var(--field);
+            color: var(--text);
+            font-size: 15px;
+            padding: 0 16px;
+            outline: none;
+        }
+
+        .field input:focus {
+            background: #eceef2;
+            box-shadow: inset 0 0 0 2px #cbd5e1;
+        }
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .password-wrap input {
+            padding-right: 62px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 7px;
+            top: 50%;
+            width: 42px;
+            height: 30px;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            color: #111827;
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .toggle-password span {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .submit-button,
+        .register-button {
+            width: 100%;
+            height: 46px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--button);
+            color: #111827;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: grid;
+            place-items: center;
+        }
+
+        .submit-button {
+            margin-top: 2px;
+        }
+
+        .register-button {
+            margin-top: 12px;
+        }
+
+        .messages {
+            margin: 0 0 10px;
+            color: #b91c1c;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .messages p {
+            margin: 4px 0;
+        }
+
+        .field-errors {
+            margin: 5px 4px 0;
+            color: #b91c1c;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            body { align-items: start; }
+            .login-card {
+                width: calc(100vw - 24px);
+                margin: 12px;
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <div class="brand" aria-label="Logo">Logo</div>
+        <h1>Log In</h1>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="field">
+                <input type="text" name="username" value="{{ form.username.value|default:'' }}"
+                       placeholder="Email" autocomplete="username" aria-label="Email or username">
+            </div>
+            <div class="field password-wrap">
+                <input id="login-password" type="password" name="password"
+                       placeholder="Password" autocomplete="current-password" aria-label="Password">
+                <button class="toggle-password" type="button" aria-label="Show password"
+                        aria-controls="login-password">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
+                        <circle cx="12" cy="12" r="2.5"/>
+                    </svg>
+                    <span>Show Password</span>
+                </button>
+            </div>
+            {% if form.errors %}
+                <div class="field-errors">
+                    {% for field in form %}
+                        {% for error in field.errors %}<div>{{ error }}</div>{% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+                </div>
+            {% endif %}
+            <button class="submit-button" type="submit">Submit</button>
+        </form>
+
+        <a class="register-button" href="{% url 'register_user' %}">Register New Account</a>
+    </main>
+
+    <script>
+        document.querySelector(".toggle-password").addEventListener("click", function () {
+            const password = document.getElementById("login-password");
+            const showing = password.type === "text";
+            password.type = showing ? "password" : "text";
+            this.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+        });
+    </script>
+</body>
+</html>
